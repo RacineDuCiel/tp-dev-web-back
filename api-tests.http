@@ -2,7 +2,7 @@
 ### AUTEURS
 ### ─────────────────────────────────────────────
 
-### Créer un auteur
+### 1. Créer un auteur — capture l'ID dans authorId1
 POST http://localhost:8080/api/authors
 Content-Type: application/json
 
@@ -14,9 +14,14 @@ Content-Type: application/json
   "nationality": "Française"
 }
 
+> {%
+  client.global.set("authorId1", response.body.id);
+  client.log("Auteur 1 créé avec id=" + response.body.id);
+%}
+
 ###
 
-### Créer un deuxième auteur
+### 2. Créer un deuxième auteur — capture l'ID dans authorId2
 POST http://localhost:8080/api/authors
 Content-Type: application/json
 
@@ -28,25 +33,30 @@ Content-Type: application/json
   "nationality": "Française"
 }
 
+> {%
+  client.global.set("authorId2", response.body.id);
+  client.log("Auteur 2 créé avec id=" + response.body.id);
+%}
+
 ###
 
-### Lister tous les auteurs
+### 3. Lister tous les auteurs
 GET http://localhost:8080/api/authors
 
 ###
 
-### Récupérer un auteur par ID
-GET http://localhost:8080/api/authors/1
+### 4. Récupérer un auteur par ID (dynamique)
+GET http://localhost:8080/api/authors/{{authorId1}}
 
 ###
 
-### Rechercher un auteur
+### 5. Rechercher un auteur
 GET http://localhost:8080/api/authors/search?q=hugo
 
 ###
 
-### Modifier un auteur
-PUT http://localhost:8080/api/authors/1
+### 6. Modifier un auteur
+PUT http://localhost:8080/api/authors/{{authorId1}}
 Content-Type: application/json
 
 {
@@ -59,7 +69,7 @@ Content-Type: application/json
 
 ###
 
-### Validation — firstName manquant → doit renvoyer 400
+### 7. Validation — firstName manquant → doit renvoyer 400
 POST http://localhost:8080/api/authors
 Content-Type: application/json
 
@@ -69,13 +79,8 @@ Content-Type: application/json
 
 ###
 
-### Auteur inexistant → doit renvoyer 404
-GET http://localhost:8080/api/authors/999
-
-###
-
-### Supprimer un auteur (retire l'auteur de ses livres avant)
-DELETE http://localhost:8080/api/authors/1
+### 8. Auteur inexistant → doit renvoyer 404
+GET http://localhost:8080/api/authors/999999
 
 ###
 
@@ -84,7 +89,7 @@ DELETE http://localhost:8080/api/authors/1
 ### LIVRES
 ### ─────────────────────────────────────────────
 
-### Créer un livre avec un auteur
+### 9. Créer un livre avec authorId1 — capture l'ID dans bookId1
 POST http://localhost:8080/api/books
 Content-Type: application/json
 
@@ -95,28 +100,33 @@ Content-Type: application/json
   "summary": "Roman historique et social sur la misère en France au XIXe siècle",
   "pageCount": 1900,
   "genre": "Roman",
-  "authorIds": [1]
+  "authorIds": [{{authorId1}}]
 }
+
+> {%
+  client.global.set("bookId1", response.body.id);
+  client.log("Livre créé avec id=" + response.body.id);
+%}
 
 ###
 
-### Lister tous les livres
+### 10. Lister tous les livres
 GET http://localhost:8080/api/books
 
 ###
 
-### Récupérer un livre par ID (vérifier auteurs + illustrations dans la réponse)
-GET http://localhost:8080/api/books/1
+### 11. Récupérer un livre par ID (vérifier auteurs + illustrations dans la réponse)
+GET http://localhost:8080/api/books/{{bookId1}}
 
 ###
 
-### Rechercher un livre
+### 12. Rechercher un livre
 GET http://localhost:8080/api/books/search?q=miser
 
 ###
 
-### Modifier un livre (ajouter un co-auteur)
-PUT http://localhost:8080/api/books/1
+### 13. Modifier un livre (ajouter authorId2 comme co-auteur)
+PUT http://localhost:8080/api/books/{{bookId1}}
 Content-Type: application/json
 
 {
@@ -126,13 +136,8 @@ Content-Type: application/json
   "summary": "Roman historique et social",
   "pageCount": 1900,
   "genre": "Roman",
-  "authorIds": [1, 2]
+  "authorIds": [{{authorId1}}, {{authorId2}}]
 }
-
-###
-
-### Supprimer un livre
-DELETE http://localhost:8080/api/books/1
 
 ###
 
@@ -141,7 +146,7 @@ DELETE http://localhost:8080/api/books/1
 ### ILLUSTRATIONS
 ### ─────────────────────────────────────────────
 
-### Créer une illustration liée au livre id=1
+### 14. Créer une illustration liée au livre — capture l'ID dans illustrationId1
 POST http://localhost:8080/api/illustrations
 Content-Type: application/json
 
@@ -149,40 +154,69 @@ Content-Type: application/json
   "title": "Couverture originale",
   "description": "Illustration de la première édition",
   "imageUrl": "https://example.com/miserables-cover.jpg",
-  "bookId": 1
+  "bookId": {{bookId1}}
 }
+
+> {%
+  client.global.set("illustrationId1", response.body.id);
+  client.log("Illustration créée avec id=" + response.body.id);
+%}
 
 ###
 
-### Lister toutes les illustrations
+### 15. Lister toutes les illustrations
 GET http://localhost:8080/api/illustrations
 
 ###
 
-### Récupérer une illustration par ID
-GET http://localhost:8080/api/illustrations/1
+### 16. Récupérer une illustration par ID
+GET http://localhost:8080/api/illustrations/{{illustrationId1}}
 
 ###
 
-### Récupérer les illustrations d'un livre
-GET http://localhost:8080/api/illustrations/book/1
+### 17. Récupérer les illustrations d'un livre
+GET http://localhost:8080/api/illustrations/book/{{bookId1}}
 
 ###
 
-### Modifier une illustration
-PUT http://localhost:8080/api/illustrations/1
+### 18. GET le livre → vérifier que auteurs ET illustrations sont bien dans la réponse
+GET http://localhost:8080/api/books/{{bookId1}}
+
+###
+
+### 19. Modifier une illustration
+PUT http://localhost:8080/api/illustrations/{{illustrationId1}}
 Content-Type: application/json
 
 {
   "title": "Couverture révisée",
   "description": "Illustration mise à jour",
   "imageUrl": "https://example.com/miserables-v2.jpg",
-  "bookId": 1
+  "bookId": {{bookId1}}
 }
 
 ###
 
-### Supprimer une illustration
-DELETE http://localhost:8080/api/illustrations/1
+
+### ─────────────────────────────────────────────
+### SUPPRESSIONS (à la fin pour ne pas casser les tests)
+### ─────────────────────────────────────────────
+
+### 20. Supprimer l'illustration
+DELETE http://localhost:8080/api/illustrations/{{illustrationId1}}
+
+###
+
+### 21. Supprimer le livre (cascade supprime les illustrations restantes)
+DELETE http://localhost:8080/api/books/{{bookId1}}
+
+###
+
+### 22. Supprimer les auteurs
+DELETE http://localhost:8080/api/authors/{{authorId1}}
+
+###
+
+DELETE http://localhost:8080/api/authors/{{authorId2}}
 
 ###
