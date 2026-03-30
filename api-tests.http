@@ -1,0 +1,188 @@
+### ─────────────────────────────────────────────
+### AUTEURS
+### ─────────────────────────────────────────────
+
+### Créer un auteur
+POST http://localhost:8080/api/authors
+Content-Type: application/json
+
+{
+  "firstName": "Victor",
+  "lastName": "Hugo",
+  "bio": "Écrivain romantique français",
+  "birthDate": "1802-02-26",
+  "nationality": "Française"
+}
+
+###
+
+### Créer un deuxième auteur
+POST http://localhost:8080/api/authors
+Content-Type: application/json
+
+{
+  "firstName": "Émile",
+  "lastName": "Zola",
+  "bio": "Écrivain naturaliste",
+  "birthDate": "1840-04-02",
+  "nationality": "Française"
+}
+
+###
+
+### Lister tous les auteurs
+GET http://localhost:8080/api/authors
+
+###
+
+### Récupérer un auteur par ID
+GET http://localhost:8080/api/authors/1
+
+###
+
+### Rechercher un auteur
+GET http://localhost:8080/api/authors/search?q=hugo
+
+###
+
+### Modifier un auteur
+PUT http://localhost:8080/api/authors/1
+Content-Type: application/json
+
+{
+  "firstName": "Victor",
+  "lastName": "Hugo",
+  "bio": "Auteur des Misérables et Notre-Dame de Paris",
+  "birthDate": "1802-02-26",
+  "nationality": "Française"
+}
+
+###
+
+### Validation — firstName manquant → doit renvoyer 400
+POST http://localhost:8080/api/authors
+Content-Type: application/json
+
+{
+  "lastName": "Test"
+}
+
+###
+
+### Auteur inexistant → doit renvoyer 404
+GET http://localhost:8080/api/authors/999
+
+###
+
+### Supprimer un auteur (retire l'auteur de ses livres avant)
+DELETE http://localhost:8080/api/authors/1
+
+###
+
+
+### ─────────────────────────────────────────────
+### LIVRES
+### ─────────────────────────────────────────────
+
+### Créer un livre avec un auteur
+POST http://localhost:8080/api/books
+Content-Type: application/json
+
+{
+  "title": "Les Misérables",
+  "isbn": "978-2-07-040850-4",
+  "publicationDate": "1862-01-01",
+  "summary": "Roman historique et social sur la misère en France au XIXe siècle",
+  "pageCount": 1900,
+  "genre": "Roman",
+  "authorIds": [1]
+}
+
+###
+
+### Lister tous les livres
+GET http://localhost:8080/api/books
+
+###
+
+### Récupérer un livre par ID (vérifier auteurs + illustrations dans la réponse)
+GET http://localhost:8080/api/books/1
+
+###
+
+### Rechercher un livre
+GET http://localhost:8080/api/books/search?q=miser
+
+###
+
+### Modifier un livre (ajouter un co-auteur)
+PUT http://localhost:8080/api/books/1
+Content-Type: application/json
+
+{
+  "title": "Les Misérables",
+  "isbn": "978-2-07-040850-4",
+  "publicationDate": "1862-01-01",
+  "summary": "Roman historique et social",
+  "pageCount": 1900,
+  "genre": "Roman",
+  "authorIds": [1, 2]
+}
+
+###
+
+### Supprimer un livre
+DELETE http://localhost:8080/api/books/1
+
+###
+
+
+### ─────────────────────────────────────────────
+### ILLUSTRATIONS
+### ─────────────────────────────────────────────
+
+### Créer une illustration liée au livre id=1
+POST http://localhost:8080/api/illustrations
+Content-Type: application/json
+
+{
+  "title": "Couverture originale",
+  "description": "Illustration de la première édition",
+  "imageUrl": "https://example.com/miserables-cover.jpg",
+  "bookId": 1
+}
+
+###
+
+### Lister toutes les illustrations
+GET http://localhost:8080/api/illustrations
+
+###
+
+### Récupérer une illustration par ID
+GET http://localhost:8080/api/illustrations/1
+
+###
+
+### Récupérer les illustrations d'un livre
+GET http://localhost:8080/api/illustrations/book/1
+
+###
+
+### Modifier une illustration
+PUT http://localhost:8080/api/illustrations/1
+Content-Type: application/json
+
+{
+  "title": "Couverture révisée",
+  "description": "Illustration mise à jour",
+  "imageUrl": "https://example.com/miserables-v2.jpg",
+  "bookId": 1
+}
+
+###
+
+### Supprimer une illustration
+DELETE http://localhost:8080/api/illustrations/1
+
+###
