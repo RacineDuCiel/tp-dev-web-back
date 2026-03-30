@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration>
+
+    <!-- Appender standard : affiche les logs dans la console en développement -->
+    <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder>
+            <pattern>%d{HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n</pattern>
+        </encoder>
+    </appender>
+
+    <!--
+        Appender LOGSTASH : envoie chaque log en JSON vers Logstash via TCP.
+        LogstashTcpSocketAppender ouvre une connexion TCP persistante vers localhost:5044.
+        LogstashEncoder sérialise le log en JSON (format attendu par le codec json_lines du pipeline Logstash).
+        Les champs enrichis (timestamp, level, logger, message, stack_trace) sont inclus automatiquement.
+    -->
+    <appender name="LOGSTASH" class="net.logstash.logback.appender.LogstashTcpSocketAppender">
+        <destination>localhost:5044</destination>
+        <encoder class="net.logstash.logback.encoder.LogstashEncoder"/>
+        <!-- keepAliveDuration : maintient la connexion TCP active pour éviter les reconnexions fréquentes -->
+        <keepAliveDuration>5 minutes</keepAliveDuration>
+    </appender>
+
+    <!-- Niveau INFO : on collecte les logs applicatifs significatifs sans surcharger Elasticsearch -->
+    <root level="INFO">
+        <appender-ref ref="CONSOLE"/>
+        <appender-ref ref="LOGSTASH"/>
+    </root>
+
+</configuration>
