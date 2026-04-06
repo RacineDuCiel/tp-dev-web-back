@@ -8,6 +8,7 @@ import com.library.libraryapi.entity.Book;
 import com.library.libraryapi.exception.ResourceNotFoundException;
 import com.library.libraryapi.repository.BookRepository;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -19,6 +20,7 @@ import java.util.stream.Collectors;
  * Service métier pour la gestion des livres.
  * Dépend de AuthorService pour résoudre les authorIds en entités Author.
  */
+@Slf4j
 @Service
 @RequiredArgsConstructor
 @Transactional
@@ -68,7 +70,9 @@ public class BookService {
             });
         }
 
-        return toResponse(bookRepository.save(book));
+        BookResponse response = toResponse(bookRepository.save(book));
+        log.info("Livre créé : id={}, titre='{}'", response.getId(), response.getTitle());
+        return response;
     }
 
     /**
@@ -98,7 +102,9 @@ public class BookService {
             });
         }
 
-        return toResponse(bookRepository.save(book));
+        BookResponse response = toResponse(bookRepository.save(book));
+        log.info("Livre mis à jour : id={}, titre='{}'", response.getId(), response.getTitle());
+        return response;
     }
 
     /**
@@ -111,6 +117,7 @@ public class BookService {
         Set<Author> authors = Set.copyOf(book.getAuthors());
         authors.forEach(book::removeAuthor);
         bookRepository.delete(book);
+        log.info("Livre supprimé : id={}, titre='{}'", id, book.getTitle());
     }
 
     /**

@@ -6,6 +6,7 @@ import com.library.libraryapi.entity.Author;
 import com.library.libraryapi.exception.ResourceNotFoundException;
 import com.library.libraryapi.repository.AuthorRepository;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -16,6 +17,7 @@ import java.util.List;
  * @Transactional garantit que toutes les opérations BDD d'une méthode sont atomiques :
  * en cas d'erreur, tout est annulé (rollback automatique).
  */
+@Slf4j
 @Service
 @RequiredArgsConstructor
 @Transactional
@@ -59,7 +61,9 @@ public class AuthorService {
                 .birthDate(request.getBirthDate())
                 .nationality(request.getNationality())
                 .build();
-        return toResponse(authorRepository.save(author));
+        AuthorResponse response = toResponse(authorRepository.save(author));
+        log.info("Auteur créé : id={}, nom='{} {}'", response.getId(), response.getFirstName(), response.getLastName());
+        return response;
     }
 
     /** Met à jour un auteur existant. */
@@ -70,7 +74,9 @@ public class AuthorService {
         author.setBio(request.getBio());
         author.setBirthDate(request.getBirthDate());
         author.setNationality(request.getNationality());
-        return toResponse(authorRepository.save(author));
+        AuthorResponse response = toResponse(authorRepository.save(author));
+        log.info("Auteur mis à jour : id={}, nom='{} {}'", response.getId(), response.getFirstName(), response.getLastName());
+        return response;
     }
 
     /**
@@ -83,6 +89,7 @@ public class AuthorService {
         // Synchroniser le côté propriétaire (Book) avant suppression
         author.getBooks().forEach(book -> book.getAuthors().remove(author));
         authorRepository.delete(author);
+        log.info("Auteur supprimé : id={}, nom='{} {}'", id, author.getFirstName(), author.getLastName());
     }
 
     /**

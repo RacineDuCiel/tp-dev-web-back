@@ -7,6 +7,7 @@ import com.library.libraryapi.entity.Illustration;
 import com.library.libraryapi.exception.ResourceNotFoundException;
 import com.library.libraryapi.repository.IllustrationRepository;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -16,6 +17,7 @@ import java.util.List;
  * Service métier pour la gestion des illustrations.
  * Dépend de BookService pour résoudre le bookId en entité Book.
  */
+@Slf4j
 @Service
 @RequiredArgsConstructor
 @Transactional
@@ -59,7 +61,9 @@ public class IllustrationService {
         // Utilise la méthode utilitaire de Book pour synchroniser la relation bidirectionnelle
         book.addIllustration(illustration);
 
-        return toResponse(illustrationRepository.save(illustration));
+        IllustrationResponse response = toResponse(illustrationRepository.save(illustration));
+        log.info("Illustration créée : id={}, titre='{}', livre='{}'", response.getId(), response.getTitle(), response.getBookTitle());
+        return response;
     }
 
     /**
@@ -82,13 +86,16 @@ public class IllustrationService {
             newBook.addIllustration(illustration);
         }
 
-        return toResponse(illustrationRepository.save(illustration));
+        IllustrationResponse response = toResponse(illustrationRepository.save(illustration));
+        log.info("Illustration mise à jour : id={}, titre='{}'", response.getId(), response.getTitle());
+        return response;
     }
 
     /** Supprime une illustration. */
     public void delete(Long id) {
         Illustration illustration = findOrThrow(id);
         illustrationRepository.delete(illustration);
+        log.info("Illustration supprimée : id={}, titre='{}'", id, illustration.getTitle());
     }
 
     public Illustration findOrThrow(Long id) {
