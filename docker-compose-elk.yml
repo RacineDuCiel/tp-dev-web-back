@@ -37,7 +37,7 @@ services:
     environment:
       - ELASTICSEARCH_HOSTS=http://elasticsearch:9200
     ports:
-      - "5601:5601"
+      - "8081:5601"
     depends_on:
       - elasticsearch
     networks:

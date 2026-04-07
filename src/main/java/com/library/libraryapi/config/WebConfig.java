@@ -6,8 +6,8 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 /**
  * Configuration CORS pour autoriser les requêtes depuis le front-end React (Vite).
- * On autorise les ports 5173 et 5174 car Vite incrémente le port si le premier est occupé.
- * allowCredentials = true est nécessaire pour les cookies de session Keycloak (Phase 3).
+ * Le front tourne sur le port 8080, le back sur 8082.
+ * allowCredentials = true est nécessaire pour les cookies (thème partagé avec Keycloak).
  */
 @Configuration
 public class WebConfig implements WebMvcConfigurer {
@@ -16,8 +16,7 @@ public class WebConfig implements WebMvcConfigurer {
     public void addCorsMappings(CorsRegistry registry) {
         registry.addMapping("/api/**")
                 .allowedOrigins(
-                    "http://localhost:5173",
-                    "http://localhost:5174"
+                    "http://localhost:8080"
                 )
                 .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS")
                 .allowedHeaders("*")
