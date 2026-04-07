@@ -60,14 +60,13 @@ public class SecurityConfig {
     /**
      * Configuration CORS centralisée ici car Spring Security doit l'appliquer
      * avant que les requêtes atteignent Spring MVC.
-     * On autorise localhost:5173 et localhost:5174 (Vite incrémente le port si occupé).
+     * Le front React (Vite) tourne sur le port 8080.
      */
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration config = new CorsConfiguration();
         config.setAllowedOrigins(List.of(
-            "http://localhost:5173",
-            "http://localhost:5174"
+            "http://localhost:8080"
         ));
         config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
         config.setAllowedHeaders(List.of("*"));
